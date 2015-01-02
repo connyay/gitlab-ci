@@ -51,6 +51,23 @@ module API
         end
       end
 
+      # Get an existing build
+      #
+      # Parameters:
+      #   id (required) - The ID of a project
+      # Example Request:
+      #   GET /builds/:id
+      get ":id" do
+        authenticate!
+        build = Build.unscoped.find_by_id(params[:id])
+
+        if current_user.can_access_project?(build.project_id)
+          present build, with: Entities::Build, type: :full
+        else
+          unauthorized!
+        end
+      end
+
       # TODO: Remove it after 5.2 release
       #
       # THIS API IS DEPRECATED.
